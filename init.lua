@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -116,8 +116,33 @@ vim.o.showmode = false
 --  See `:help 'clipboard'`
 vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 
+-- Enable line wrapping
+vim.opt.wrap = true
+
+-- Break lines at word boundries
+vim.opt.breakat = ' ^I!@*-+;:,/?'
+vim.opt.linebreak = true
+vim.opt.showbreak = '↪'
+
 -- Enable break indent
 vim.o.breakindent = true
+
+-- Function to trim trailing whitespace
+local function trim_trailing_whitespace()
+  local save = vim.fn.winsaveview()
+  vim.cmd [[keeppatterns %s/\s\+$//e]]
+  vim.fn.winrestview(save)
+end
+
+-- Create an autocommand group for trimming trailing whitespace
+vim.api.nvim_create_augroup('TrimTrailingWhitespace', {})
+
+-- Add autocommand to trim trailing whitespace before saving a file
+vim.api.nvim_create_autocmd('BufWritePre', {
+  group = 'TrimTrailingWhitespace',
+  pattern = '*',
+  callback = trim_trailing_whitespace,
+})
 
 -- Enable undo/redo changes even after closing and reopening a file
 vim.o.undofile = true
@@ -133,7 +158,12 @@ vim.o.signcolumn = 'yes'
 vim.o.updatetime = 250
 
 -- Decrease mapped sequence wait time
-vim.o.timeoutlen = 300
+vim.o.timeoutlen = 1000
+
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
+vim.o.expandtab = true
+vim.o.softtabstop = 4
 
 -- Configure how new splits should be opened
 vim.o.splitright = true
@@ -166,6 +196,10 @@ vim.o.confirm = true
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+
+-- Exit insert mode with 'jj' or 'kk' instead of <Esc>
+vim.keymap.set({ 'i' }, 'jj', '<Esc>', { silent = true })
+vim.keymap.set({ 'i' }, 'kk', '<Esc>', { silent = true })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -602,7 +636,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
