@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -118,8 +118,33 @@ vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
 
+-- Enable line wrapping
+vim.opt.wrap = true
+
+-- Break lines at word boundries
+vim.opt.breakat = ' ^I!@*-+;:,/?'
+vim.opt.linebreak = true
+vim.opt.showbreak = '↪'
+
 -- Enable break indent
 vim.opt.breakindent = true
+
+-- Function to trim trailing whitespace
+local function trim_trailing_whitespace()
+  local save = vim.fn.winsaveview()
+  vim.cmd [[keeppatterns %s/\s\+$//e]]
+  vim.fn.winrestview(save)
+end
+
+-- Create an autocommand group for trimming trailing whitespace
+vim.api.nvim_create_augroup('TrimTrailingWhitespace', {})
+
+-- Add autocommand to trim trailing whitespace before saving a file
+vim.api.nvim_create_autocmd('BufWritePre', {
+  group = 'TrimTrailingWhitespace',
+  pattern = '*',
+  callback = trim_trailing_whitespace,
+})
 
 -- Save undo history
 vim.opt.undofile = true
@@ -135,7 +160,12 @@ vim.opt.signcolumn = 'yes'
 vim.opt.updatetime = 250
 
 -- Decrease mapped sequence wait time
-vim.opt.timeoutlen = 300
+vim.opt.timeoutlen = 1000
+
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+vim.opt.softtabstop = 4
 
 -- Configure how new splits should be opened
 vim.opt.splitright = true
@@ -158,6 +188,10 @@ vim.opt.scrolloff = 10
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+
+-- Exit insert mode with 'jj' or 'kk' instead of <Esc>
+vim.keymap.set({ 'i' }, 'jj', '<Esc>', { silent = true })
+vim.keymap.set({ 'i' }, 'kk', '<Esc>', { silent = true })
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
@@ -660,7 +694,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -1001,9 +1035,9 @@ require('lazy').setup({
         -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
         --  If you are experiencing weird indenting issues, add the language to
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
+        additional_vim_regex_highlighting = { 'ruby', 'zig' },
       },
-      indent = { enable = true, disable = { 'ruby' } },
+      indent = { enable = true, disable = { 'ruby', 'python', 'zig' } },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
