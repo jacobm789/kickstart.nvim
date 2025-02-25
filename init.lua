@@ -110,6 +110,22 @@ vim.o.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
+-- Use xclip for clipboard
+if vim.fn.executable 'xclip' == 1 then
+  vim.g.clipboard = {
+    name = 'xclip',
+    copy = {
+      ['+'] = 'xclip -selection clipboard -in',
+      ['*'] = 'xclip -selection primary -in',
+    },
+    paste = {
+      ['+'] = 'xclip -selection clipboard -out',
+      ['*'] = 'xclip -selection primary -out',
+    },
+    cache_enabled = 0,
+  }
+end
+
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
