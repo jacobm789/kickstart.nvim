@@ -650,7 +650,7 @@ require('lazy').setup({
       --  See `:help lsp-config` for information about keys and how to configure
       ---@type table<string, vim.lsp.Config>
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
         pyright = {},
         -- rust_analyzer = {},
@@ -927,7 +927,12 @@ require('lazy').setup({
 
         -- Custom Highlights --
         colors = {}, -- Override default colors
-        highlights = {}, -- Override highlight groups
+        highlights = {
+          ['@comment'] = { fg = '$light_grey' },
+          ['@comment.documentation'] = { fg = '$light_grey' },
+          ['@lsp.type.comment'] = { fg = '$light_grey' },
+          ['@lsp.type.comment.documentation'] = { fg = '$light_grey' },
+        }, -- Override highlight groups
 
         -- Plugins Config --
         diagnostics = {
