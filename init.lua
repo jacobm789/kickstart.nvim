@@ -723,7 +723,7 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
         pyright = {},
         -- rust_analyzer = {},
@@ -1007,7 +1007,12 @@ require('lazy').setup({
 
         -- Custom Highlights --
         colors = {}, -- Override default colors
-        highlights = {}, -- Override highlight groups
+        highlights = {
+          ['@comment'] = { fg = '$light_grey' },
+          ['@comment.documentation'] = { fg = '$light_grey' },
+          ['@lsp.type.comment'] = { fg = '$light_grey' },
+          ['@lsp.type.comment.documentation'] = { fg = '$light_grey' },
+        }, -- Override highlight groups
 
         -- Plugins Config --
         diagnostics = {
