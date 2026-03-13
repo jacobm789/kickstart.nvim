@@ -96,7 +96,7 @@ local function trim_trailing_whitespace()
 end
 
 vim.keymap.set({ 'n', 'v' }, '<leader>tw', trim_trailing_whitespace, {
-  desc = 'Trim trailing whitespace',
+  desc = '[T]rim trailing [W]hitespace',
   silent = true,
 })
 
@@ -108,7 +108,7 @@ vim.o.ignorecase = true
 vim.o.smartcase = true
 
 -- Keep signcolumn on by default
-vim.o.signcolumn = 'yes'
+vim.o.signcolumn = 'auto:5'
 
 -- Decrease update time
 vim.o.updatetime = 250
@@ -170,7 +170,8 @@ vim.diagnostic.config {
   underline = { severity = { min = vim.diagnostic.severity.WARN } },
 
   -- Can switch between these as you prefer
-  virtual_text = true, -- Text shows up at the end of the line
+  signs = false,
+  virtual_text = false, -- Text shows up at the end of the line
   virtual_lines = false, -- Text shows up underneath the line, with virtual lines
 
   -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
@@ -178,6 +179,24 @@ vim.diagnostic.config {
 }
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+
+local function toggle_diagnostic_mode()
+  local current = vim.g.diag_mode or 'minimal' -- default to signs-only on first run
+
+  if current == 'minimal' then
+    vim.diagnostic.config { virtual_lines = true }
+    vim.diagnostic.config { signs = true }
+    vim.g.diag_mode = 'virtual_test_and_signs'
+  else
+    vim.diagnostic.config { virtual_lines = false }
+    vim.diagnostic.config { signs = false }
+    vim.g.diag_mode = 'minimal'
+  end
+end
+
+vim.keymap.set('n', '<leader>td', toggle_diagnostic_mode, {
+  desc = '[T]oggle [D]iagnostic virtual text and signs',
+})
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -211,10 +230,8 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 vim.keymap.set('n', '<leader>b', function()
   local input = vim.fn.input 'Buffer number: '
   local num = tonumber(input)
-  if num then
-    require('bufferline').go_to(num, true)
-  end
-end, { desc = 'Go to buffer by number' })
+  if num then require('bufferline').go_to(num, true) end
+end, { desc = 'Go to [B]uffer by number' })
 
 vim.keymap.set('n', '<A-.>', '<Cmd>BufferLineMoveNext<CR>', { silent = true }) -- Alt + . / Alt + >
 vim.keymap.set('n', '<A-,>', '<Cmd>BufferLineMovePrev<CR>', { silent = true }) -- Alt + , / Alt + <
@@ -426,9 +443,12 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-      vim.keymap.set('n', '<leader>sa', function()
-        require('telescope.builtin').find_files { hidden = true, no_ignore = true }
-      end, { desc = 'Find ALL files (incl. ignored)' })
+      vim.keymap.set(
+        'n',
+        '<leader>sa',
+        function() require('telescope.builtin').find_files { hidden = true, no_ignore = true } end,
+        { desc = '[S]earch [A]ll files (incl. ignored)' }
+      )
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -621,7 +641,7 @@ require('lazy').setup({
       --  See `:help lsp-config` for information about keys and how to configure
       ---@type table<string, vim.lsp.Config>
       local servers = {
-        -- clangd = {},
+        clangd = {},
         -- gopls = {},
         pyright = {},
         -- rust_analyzer = {},
@@ -971,7 +991,7 @@ require('lazy').setup({
     branch = 'main',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter-intro`
     config = function()
-      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+      local parsers = { 'bash', 'c', 'cpp', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
       require('nvim-treesitter').install(parsers)
       vim.api.nvim_create_autocmd('FileType', {
         callback = function(args)
