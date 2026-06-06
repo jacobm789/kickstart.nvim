@@ -161,6 +161,8 @@ vim.keymap.set({ 'i' }, 'kk', '<Esc>', { silent = true })
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+vim.keymap.set('n', '<leader>c', '<cmd>checktime<CR>')
+
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
 vim.diagnostic.config {
@@ -639,7 +641,17 @@ require('lazy').setup({
       --  See `:help lsp-config` for information about keys and how to configure
       ---@type table<string, vim.lsp.Config>
       local servers = {
-        clangd = {},
+        clangd = {
+          cmd = {
+            'clangd',
+            '--background-index',
+            '--clang-tidy',
+            '--header-insertion=iwyu',
+            '--completion-style=detailed',
+            '--limit-results=0',
+            '--compile-commands-dir=build',
+          },
+        },
         -- gopls = {},
         pyright = {},
         -- rust_analyzer = {},
