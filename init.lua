@@ -162,6 +162,7 @@ vim.keymap.set({ 'i' }, 'kk', '<Esc>', { silent = true })
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 vim.keymap.set('n', '<leader>c', '<cmd>checktime<CR>')
+vim.keymap.set('n', '<leader>l', '<cmd>lsp restart<CR>')
 
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
